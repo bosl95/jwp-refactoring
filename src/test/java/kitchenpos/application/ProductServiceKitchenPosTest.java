@@ -3,7 +3,8 @@ package kitchenpos.application;
 import kitchenpos.KitchenPosTestFixture;
 import kitchenpos.dao.ProductDao;
 import kitchenpos.domain.Product;
-import org.junit.jupiter.api.BeforeEach;
+import kitchenpos.ui.dto.ProductRequest;
+import kitchenpos.ui.dto.ProductResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,36 +32,30 @@ class ProductServiceKitchenPosTest extends KitchenPosTestFixture {
     @InjectMocks
     private ProductService productService;
 
-    private Product 강정치킨;
-    private Product 튀김소보로;
-
-    @BeforeEach
-    void setUp() {
-        강정치킨 = 상품을_저장한다(null, "강정치킨", BigDecimal.valueOf(1700));
-        튀김소보로 = 상품을_저장한다(null, "튀김소보로", BigDecimal.valueOf(1200));
-    }
+    private final ProductRequest firstProductRequest = 상품을_요청한다("강정치킨", BigDecimal.valueOf(1700));
+    private final ProductRequest secondProductRequest = 상품을_요청한다("튀김소보로", BigDecimal.valueOf(1200));
 
     @DisplayName("상품을 등록할 수 있다.")
     @Test
     void create() {
         // given
-        Product product = 상품을_저장한다(1L, "강정치킨", BigDecimal.valueOf(1700));
-        given(productDao.save(any(Product.class))).willReturn(product);
+        Product savedFirstProduct = 상품을_저장한다(1L, firstProductRequest);
+        given(productDao.save(any(Product.class))).willReturn(savedFirstProduct);
 
         // when
-        Product savedProduct = productService.create(강정치킨);
+        ProductResponse savedProduct = productService.create(firstProductRequest);
 
         // then
-        assertThat(savedProduct).usingRecursiveComparison().isEqualTo(product);
-        verify(productDao, times(1)).save(강정치킨);
+        assertThat(savedProduct).usingRecursiveComparison().isEqualTo(ProductResponse.of(savedFirstProduct));
+        verify(productDao, times(1)).save(any(Product.class));
     }
 
     @DisplayName("1자 이상의 문자로 구성된 상품명을 등록한다.")
     @Test
     void validateProductNameLength() {
         // given
-        Product nullNameProduct = 상품을_저장한다(null, null, BigDecimal.valueOf(1700));
-        Product emptyNameProduct = 상품을_저장한다(null, "", BigDecimal.valueOf(1700));
+        ProductRequest nullNameProduct = 상품을_요청한다(null, BigDecimal.valueOf(1700));
+        ProductRequest emptyNameProduct = 상품을_요청한다("", BigDecimal.valueOf(1700));
 
         // then
         assertThatThrownBy(() -> productService.create(nullNameProduct)).isInstanceOf(IllegalArgumentException.class);
@@ -71,8 +66,8 @@ class ProductServiceKitchenPosTest extends KitchenPosTestFixture {
     @Test
     void validateProductPrice() {
         // given
-        Product zeroPriceProduct = 상품을_저장한다(null, "강정치킨", BigDecimal.valueOf(-1));
-        Product nullPriceProduct = 상품을_저장한다(null, "강정치킨", null);
+        ProductRequest zeroPriceProduct = 상품을_요청한다("강정치킨", BigDecimal.valueOf(-1));
+        ProductRequest nullPriceProduct = 상품을_요청한다("강정치킨", null);
 
         // when
         assertThatThrownBy(() -> productService.create(zeroPriceProduct)).isInstanceOf(IllegalArgumentException.class);
@@ -83,14 +78,16 @@ class ProductServiceKitchenPosTest extends KitchenPosTestFixture {
     @Test
     void list() {
         // given
-        List<Product> products = Arrays.asList(강정치킨, 튀김소보로);
+        Product savedFirstProduct = 상품을_저장한다(1L, firstProductRequest);
+        Product savedSecondProduct = 상품을_저장한다(2L, secondProductRequest);
+        List<Product> products = Arrays.asList(savedFirstProduct, savedSecondProduct);
         given(productDao.findAll()).willReturn(products);
 
         // when
-        List<Product> result = productService.list();
+        List<ProductResponse> result = productService.list();
 
         // then
-        assertThat(result).containsExactly(강정치킨, 튀김소보로);
+        assertThat(result).usingRecursiveComparison().isEqualTo(ProductResponse.toList(products));
         verify(productDao, times(1)).findAll();
     }
 }

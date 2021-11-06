@@ -3,8 +3,8 @@ package kitchenpos.ui;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kitchenpos.KitchenPosTestFixture;
 import kitchenpos.application.ProductService;
-import kitchenpos.domain.Product;
-import org.junit.jupiter.api.BeforeEach;
+import kitchenpos.ui.dto.ProductRequest;
+import kitchenpos.ui.dto.ProductResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -38,30 +38,33 @@ class ProductRestControllerTest extends KitchenPosTestFixture {
     @MockBean
     private ProductService productService;
 
-    private final Product firstProduct = 상품을_저장한다(1L, "닭강정", BigDecimal.valueOf(1700));
-    private final Product secondProduct = 상품을_저장한다(2L, "오뎅", BigDecimal.valueOf(500));
+    private final ProductRequest firstProductRequest = 상품을_요청한다("닭강정", BigDecimal.valueOf(1700));
+    private final ProductResponse firstProductResponse = ProductResponse.of(상품을_저장한다(1L, "닭강정", BigDecimal.valueOf(1700)));
+
+    private final ProductRequest secondProductRequest = 상품을_요청한다("오뎅", BigDecimal.valueOf(500));
+    private final ProductResponse secondProductResponse = ProductResponse.of(상품을_저장한다(2L, "오뎅", BigDecimal.valueOf(500)));
 
     @Test
     void create() throws Exception {
         // given
         // when
-        given(productService.create(any(Product.class))).willReturn(firstProduct);
+        given(productService.create(any(ProductRequest.class))).willReturn(firstProductResponse);
 
         // then
         mvc.perform(post("/api/products")
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(firstProduct)))
+                        .content(objectMapper.writeValueAsString(firstProductRequest)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id", is(firstProduct.getId().intValue())))
-                .andExpect(jsonPath("$.name", is(firstProduct.getName())))
-                .andExpect(jsonPath("$.price", is(firstProduct.getPrice().intValue())));
+                .andExpect(jsonPath("$.id", is(firstProductResponse.getId().intValue())))
+                .andExpect(jsonPath("$.name", is(firstProductResponse.getName())))
+                .andExpect(jsonPath("$.price", is(firstProductResponse.getPrice().intValue())));
     }
 
     @Test
     void list() throws Exception {
         // given
-        List<Product> products = Arrays.asList(firstProduct, secondProduct);
+        List<ProductResponse> products = Arrays.asList(firstProductResponse, secondProductResponse);
 
         // when
         given(productService.list()).willReturn(products);
@@ -71,9 +74,9 @@ class ProductRestControllerTest extends KitchenPosTestFixture {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)))
-                .andExpect(jsonPath("$[0].id", is(firstProduct.getId().intValue())))
-                .andExpect(jsonPath("$[0].name", is(firstProduct.getName())))
-                .andExpect(jsonPath("$[1].id", is(secondProduct.getId().intValue())))
-                .andExpect(jsonPath("$[1].name", is(secondProduct.getName())));
+                .andExpect(jsonPath("$[0].id", is(firstProductResponse.getId().intValue())))
+                .andExpect(jsonPath("$[0].name", is(firstProductResponse.getName())))
+                .andExpect(jsonPath("$[1].id", is(secondProductResponse.getId().intValue())))
+                .andExpect(jsonPath("$[1].name", is(secondProductResponse.getName())));
     }
 }

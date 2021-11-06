@@ -3,6 +3,7 @@ package kitchenpos;
 import kitchenpos.domain.*;
 import kitchenpos.ui.dto.MenuGroupRequest;
 import kitchenpos.ui.dto.MenuGroupResponse;
+import kitchenpos.ui.dto.ProductRequest;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -20,12 +21,16 @@ public class KitchenPosTestFixture {
         return localTime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
     }
 
+    public static ProductRequest 상품을_요청한다(String name, BigDecimal price) {
+        return new ProductRequest(name, price);
+    }
+
     public static Product 상품을_저장한다(Long id, String name, BigDecimal price) {
-        Product product = new Product();
-        product.setId(id);
-        product.setName(name);
-        product.setPrice(price);
-        return product;
+        return new Product(id, name, price);
+    }
+
+    public static Product 상품을_저장한다(Long id, ProductRequest productRequest) {
+        return 상품을_저장한다(id, productRequest.getName(), productRequest.getPrice());
     }
 
     public static Menu 메뉴를_저장한다(Long id, String name, BigDecimal price, Long menuGroupId, List<MenuProduct> menuProducts) {
