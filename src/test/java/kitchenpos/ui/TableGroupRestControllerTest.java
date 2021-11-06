@@ -5,7 +5,6 @@ import kitchenpos.KitchenPosTestFixture;
 import kitchenpos.application.TableGroupService;
 import kitchenpos.domain.OrderTable;
 import kitchenpos.domain.TableGroup;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -40,16 +39,9 @@ class TableGroupRestControllerTest extends KitchenPosTestFixture {
     @MockBean
     private TableGroupService tableGroupService;
 
-    private TableGroup firstTableGroup;
-    private OrderTable firstOrderTable;
-    private OrderTable secondOrderTable;
-
-    @BeforeEach
-    void setUp() {
-        firstOrderTable = 주문_테이블을_저장한다(1L, 1L, 3, false);
-        secondOrderTable = 주문_테이블을_저장한다(2L, 1L, 4, false);
-        firstTableGroup = 테이블_그룹을_저장한다(1L, LocalDateTime.now(), Arrays.asList(firstOrderTable, secondOrderTable));
-    }
+    private final OrderTable firstOrderTable = 주문_테이블을_저장한다(1L, 1L, 3, false);
+    private final OrderTable secondOrderTable = 주문_테이블을_저장한다(2L, 1L, 4, false);
+    private final TableGroup firstTableGroup = 테이블_그룹을_저장한다(1L, LocalDateTime.now(), Arrays.asList(firstOrderTable, secondOrderTable));
 
     @Test
     void create() throws Exception {
@@ -64,7 +56,7 @@ class TableGroupRestControllerTest extends KitchenPosTestFixture {
                         .content(objectMapper.writeValueAsString(firstTableGroup)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id", is(firstTableGroup.getId().intValue())))
-                .andExpect(jsonPath("$.createdDate", is(firstTableGroup.getCreatedDate().toString())))
+                .andExpect(jsonPath("$.createdDate", is(표준_시간_형식을_적용한다(firstTableGroup.getCreatedDate()))))
                 .andExpect(jsonPath("$.orderTables", hasSize(2)));
     }
 

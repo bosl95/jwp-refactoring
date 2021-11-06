@@ -4,6 +4,7 @@ import kitchenpos.domain.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 
@@ -12,6 +13,10 @@ public class KitchenPosTestFixture {
     public static final List<String> COOKING_OR_MEAL_STATUS = Arrays.asList(
             OrderStatus.COOKING.name(), OrderStatus.MEAL.name()
     );
+
+    public static String 표준_시간_형식을_적용한다(LocalDateTime localTime) {
+        return localTime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+    }
 
     public static Product 상품을_저장한다(Long id, String name, BigDecimal price) {
         Product product = new Product();

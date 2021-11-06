@@ -38,14 +38,8 @@ class ProductRestControllerTest extends KitchenPosTestFixture {
     @MockBean
     private ProductService productService;
 
-    private Product firstProduct;
-    private Product secondProduct;
-
-    @BeforeEach
-    void setUp() {
-        firstProduct = 상품을_저장한다(1L, "닭강정", BigDecimal.valueOf(1700));
-        secondProduct = 상품을_저장한다(2L, "오뎅", BigDecimal.valueOf(500));
-    }
+    private final Product firstProduct = 상품을_저장한다(1L, "닭강정", BigDecimal.valueOf(1700));
+    private final Product secondProduct = 상품을_저장한다(2L, "오뎅", BigDecimal.valueOf(500));
 
     @Test
     void create() throws Exception {

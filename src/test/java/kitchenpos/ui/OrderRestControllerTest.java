@@ -6,7 +6,6 @@ import kitchenpos.application.OrderService;
 import kitchenpos.domain.Order;
 import kitchenpos.domain.OrderLineItem;
 import kitchenpos.domain.OrderStatus;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -20,8 +19,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -40,28 +38,25 @@ class OrderRestControllerTest extends KitchenPosTestFixture {
     @MockBean
     private OrderService orderService;
 
-    private Order firstOrder;
-    private Order secondOrder;
+    private final LocalDateTime time = LocalDateTime.now();
 
-    @BeforeEach
-    void setUp() {
-        OrderLineItem orderLineItem1 = 주문_항목을_저장한다(1L, 1L, 1L, 1000L);
-        OrderLineItem orderLineItem2 = 주문_항목을_저장한다(2L, 2L, 2L, 1000L);
-        firstOrder = 주문을_저장한다(
-                1L,
-                1L,
-                OrderStatus.COMPLETION.name(),
-                LocalDateTime.now(),
-                Arrays.asList(orderLineItem1, orderLineItem2)
-        );
-        secondOrder = 주문을_저장한다(
-                2L,
-                2L,
-                OrderStatus.COOKING.name(),
-                LocalDateTime.now(),
-                Collections.singletonList(orderLineItem2)
-        );
-    }
+    private final OrderLineItem orderLineItem1 = 주문_항목을_저장한다(1L, 1L, 1L, 1000L);
+    private final OrderLineItem orderLineItem2 = 주문_항목을_저장한다(2L, 2L, 2L, 1000L);
+
+    private final Order firstOrder = 주문을_저장한다(
+            1L,
+            1L,
+            OrderStatus.COMPLETION.name(),
+            LocalDateTime.now(),
+            Arrays.asList(orderLineItem1, orderLineItem2)
+    );
+    private final Order secondOrder = 주문을_저장한다(
+            2L,
+            2L,
+            OrderStatus.COOKING.name(),
+            LocalDateTime.now(),
+            Collections.singletonList(orderLineItem2)
+    );
 
     @Test
     void create() throws Exception {
@@ -84,7 +79,7 @@ class OrderRestControllerTest extends KitchenPosTestFixture {
                 .andExpect(jsonPath("$.id", is(firstOrder.getId().intValue())))
                 .andExpect(jsonPath("$.orderTableId", is(firstOrder.getOrderTableId().intValue())))
                 .andExpect(jsonPath("$.orderStatus", is(firstOrder.getOrderStatus())))
-                .andExpect(jsonPath("$.orderedTime", is(firstOrder.getOrderedTime().toString())))
+                .andExpect(jsonPath("$.orderedTime", is(표준_시간_형식을_적용한다(firstOrder.getOrderedTime()))))
                 .andExpect(jsonPath("$.orderLineItems", hasSize(firstOrder.getOrderLineItems().size())));
     }
 
@@ -126,7 +121,7 @@ class OrderRestControllerTest extends KitchenPosTestFixture {
                 .andExpect(jsonPath("$.id", is(secondOrder.getId().intValue())))
                 .andExpect(jsonPath("$.orderTableId", is(secondOrder.getOrderTableId().intValue())))
                 .andExpect(jsonPath("$.orderStatus", is(secondOrder.getOrderStatus())))
-                .andExpect(jsonPath("$.orderedTime", is(secondOrder.getOrderedTime().toString())))
+                .andExpect(jsonPath("$.orderedTime", is(표준_시간_형식을_적용한다(secondOrder.getOrderedTime()))))
                 .andExpect(jsonPath("$.orderLineItems", hasSize(secondOrder.getOrderLineItems().size())));
     }
 }
