@@ -1,6 +1,8 @@
 package kitchenpos;
 
 import kitchenpos.domain.*;
+import kitchenpos.ui.dto.MenuGroupRequest;
+import kitchenpos.ui.dto.MenuGroupResponse;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -41,10 +43,15 @@ public class KitchenPosTestFixture {
     }
 
     public static MenuGroup 메뉴_그룹을_저장한다(Long id, String groupName) {
-        MenuGroup savedMenuGroup = new MenuGroup();
-        savedMenuGroup.setId(id);
-        savedMenuGroup.setName(groupName);
-        return savedMenuGroup;
+        return new MenuGroup(id, groupName);
+    }
+
+    public static MenuGroupRequest 메뉴_그룹을_요청한다(String groupName) {
+        return new MenuGroupRequest(groupName);
+    }
+
+    public static MenuGroupResponse 메뉴_그룹을_응답한다(Long id, String groupName) {
+        return new MenuGroupResponse(id, groupName);
     }
 
     public static OrderTable 주문_테이블을_저장한다(Long id, Long tableGroupId, int numberOfGuests, boolean empty) {

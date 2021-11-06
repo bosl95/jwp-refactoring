@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import kitchenpos.KitchenPosTestFixture;
 import kitchenpos.application.MenuGroupService;
 import kitchenpos.domain.MenuGroup;
-import org.junit.jupiter.api.BeforeEach;
+import kitchenpos.ui.dto.MenuGroupResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -38,16 +38,9 @@ class MenuGroupRestControllerTest extends KitchenPosTestFixture {
     @MockBean
     private MenuGroupService menuGroupService;
 
-    private MenuGroup firstMenuGroup;
-    private MenuGroup secondMenuGroup;
-    private MenuGroup thirdMenuGroup;
-
-    @BeforeEach
-    void setUp() {
-        firstMenuGroup = 메뉴_그룹을_저장한다(1L, "추천 메뉴");
-        secondMenuGroup = 메뉴_그룹을_저장한다(2L, "추천 메뉴2");
-        thirdMenuGroup = 메뉴_그룹을_저장한다(3L, "추천 메뉴3");
-    }
+    private final MenuGroupResponse firstMenuGroup = 메뉴_그룹을_응답한다(1L, "추천 메뉴");
+    private final MenuGroupResponse secondMenuGroup = 메뉴_그룹을_응답한다(2L, "추천 메뉴2");
+    private final MenuGroupResponse thirdMenuGroup = 메뉴_그룹을_응답한다(3L, "추천 메뉴3");
 
     @Test
     void create() throws Exception {
@@ -57,9 +50,10 @@ class MenuGroupRestControllerTest extends KitchenPosTestFixture {
 
         // then
         mvc.perform(post("/api/menu-groups")
-                        .content(objectMapper.writeValueAsString(메뉴_그룹을_저장한다(null, "추천 메뉴")))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
+                        .content(objectMapper.writeValueAsString(메뉴_그룹을_요청한다("추천 메뉴")))
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .accept(MediaType.APPLICATION_JSON_VALUE)
+                )
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(firstMenuGroup.getId().intValue()))
                 .andExpect(jsonPath("$.name").value(firstMenuGroup.getName()));
@@ -68,7 +62,7 @@ class MenuGroupRestControllerTest extends KitchenPosTestFixture {
     @Test
     void list() throws Exception {
         // given
-        List<MenuGroup> menuGroups = Arrays.asList(firstMenuGroup, secondMenuGroup, thirdMenuGroup);
+        List<MenuGroupResponse> menuGroups = Arrays.asList(firstMenuGroup, secondMenuGroup, thirdMenuGroup);
 
         // when
         given(menuGroupService.list()).willReturn(menuGroups);
