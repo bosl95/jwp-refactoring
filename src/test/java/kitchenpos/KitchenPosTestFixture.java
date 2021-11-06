@@ -31,7 +31,7 @@ public class KitchenPosTestFixture {
         return savedMenu;
     }
 
-    public static Menu 메뉴를_저장한다(long id, Menu menu) {
+    public static Menu 메뉴를_저장한다(Long id, Menu menu) {
         return 메뉴를_저장한다(id, menu.getName(), menu.getPrice(), menu.getMenuGroupId(), menu.getMenuProducts());
     }
 

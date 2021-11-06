@@ -67,7 +67,7 @@ class ProductServiceKitchenPosTest extends KitchenPosTestFixture {
         assertThatThrownBy(() -> productService.create(emptyNameProduct)).isInstanceOf(IllegalArgumentException.class);
     }
 
-    @DisplayName("가격의 상품은 0원 이상이어야한다.")
+    @DisplayName("상품의 가격은 0원 이상이어야한다.")
     @Test
     void validateProductPrice() {
         // given

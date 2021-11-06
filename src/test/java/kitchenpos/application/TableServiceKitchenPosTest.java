@@ -83,7 +83,7 @@ class TableServiceKitchenPosTest extends KitchenPosTestFixture {
                 orderTable.getNumberOfGuests(),
                 orderTable.isEmpty()
         );
-        given(orderTableDao.findById(1L)).willReturn(java.util.Optional.of(orderTable));
+        given(orderTableDao.findById(1L)).willReturn(Optional.of(orderTable));
         given(orderDao.existsByOrderTableIdAndOrderStatusIn(1L, COOKING_OR_MEAL_STATUS)).willReturn(false);
 
         OrderTable changedOrderTable = 주문_테이블을_저장한다(null, null, 0, false);

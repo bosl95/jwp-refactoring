@@ -6,7 +6,6 @@ import kitchenpos.dao.OrderTableDao;
 import kitchenpos.dao.TableGroupDao;
 import kitchenpos.domain.OrderTable;
 import kitchenpos.domain.TableGroup;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,6 +22,7 @@ import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
@@ -68,13 +68,23 @@ class TableGroupServiceKitchenPosTest extends KitchenPosTestFixture {
         verify(orderTableDao, times(orderTableIds.size())).save(any(OrderTable.class));
     }
 
+    @DisplayName("주문 테이블이 비어있는 경우 테이블 그룹을 등록할 수 없다.")
+    @Test
+    void validateTableGroupCreateWhenEmptyOrderTable() {
+        // when
+        tableGroup.setOrderTables(Collections.emptyList());
+
+        // then
+        assertThatThrownBy(() -> tableGroupService.create(tableGroup)).isInstanceOf(IllegalArgumentException.class);
+    }
+
     @DisplayName("주문 테이블이 없거나 주문 테이블 크기가 2 미만 작은 경우 등록할 수 없다.")
     @Test
-    void validateTableGroupCreate() {
-        tableGroup.setOrderTables(Collections.emptyList());
-        assertThatThrownBy(() -> tableGroupService.create(tableGroup)).isInstanceOf(IllegalArgumentException.class);
-
+    void validateTableGroupCreateWhenOrderTableSizeLessThanTwo() {
+        // when
         tableGroup.setOrderTables(Collections.singletonList(firstOrderTable));
+
+        // then
         assertThatThrownBy(() -> tableGroupService.create(tableGroup)).isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -128,7 +138,7 @@ class TableGroupServiceKitchenPosTest extends KitchenPosTestFixture {
 
         // when
         // then
-        Assertions.assertDoesNotThrow(() -> tableGroupService.ungroup(1L));
+        assertDoesNotThrow(() -> tableGroupService.ungroup(1L));
 
         verify(orderTableDao, times(1)).findAllByTableGroupId(1L);
         verify(orderDao, times(1)).existsByOrderTableIdInAndOrderStatusIn(orderTableIds, COOKING_OR_MEAL_STATUS);

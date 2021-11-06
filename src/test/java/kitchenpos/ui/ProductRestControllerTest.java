@@ -80,7 +80,6 @@ class ProductRestControllerTest extends KitchenPosTestFixture {
                 .andExpect(jsonPath("$[0].id", is(firstProduct.getId().intValue())))
                 .andExpect(jsonPath("$[0].name", is(firstProduct.getName())))
                 .andExpect(jsonPath("$[1].id", is(secondProduct.getId().intValue())))
-                .andExpect(jsonPath("$[1].name", is(secondProduct.getName())))
-        ;
+                .andExpect(jsonPath("$[1].name", is(secondProduct.getName())));
     }
 }

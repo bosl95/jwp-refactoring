@@ -111,7 +111,7 @@ class MenuServiceKitchenPosTest extends KitchenPosTestFixture {
 
     @DisplayName("메뉴 가격은 0원 이상이어야한다.")
     @Test
-    void validateMenuNameLength() {
+    void validateMenuPriceLength() {
         // when
         menu.setPrice(BigDecimal.valueOf(-1));
 
