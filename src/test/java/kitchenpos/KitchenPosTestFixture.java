@@ -3,6 +3,7 @@ package kitchenpos;
 import kitchenpos.domain.*;
 import kitchenpos.ui.dto.MenuGroupRequest;
 import kitchenpos.ui.dto.MenuGroupResponse;
+import kitchenpos.ui.dto.OrderTableRequest;
 import kitchenpos.ui.dto.ProductRequest;
 
 import java.math.BigDecimal;
@@ -59,13 +60,20 @@ public class KitchenPosTestFixture {
         return new MenuGroupResponse(id, groupName);
     }
 
+    public static OrderTableRequest 주문_테이블을_요청한다(int numberOfGuests, boolean empty) {
+        return new OrderTableRequest(numberOfGuests, empty);
+    }
+
     public static OrderTable 주문_테이블을_저장한다(Long id, Long tableGroupId, int numberOfGuests, boolean empty) {
-        OrderTable orderTable = new OrderTable();
-        orderTable.setId(id);
-        orderTable.setTableGroupId(tableGroupId);
-        orderTable.setNumberOfGuests(numberOfGuests);
-        orderTable.setEmpty(empty);
-        return orderTable;
+        return new OrderTable(id, tableGroupId, numberOfGuests, empty);
+    }
+
+    public static OrderTable 주문_테이블을_저장한다(Long id, Long tableGroupId, OrderTableRequest orderTableRequest) {
+        return 주문_테이블을_저장한다(id, tableGroupId, orderTableRequest.getNumberOfGuests(), orderTableRequest.isEmpty());
+    }
+
+    public static OrderTable 주문_테이블을_저장한다(OrderTable orderTable, OrderTableRequest orderTableRequest) {
+        return 주문_테이블을_저장한다(orderTable.getId(), orderTable.getTableGroupId(), orderTableRequest.getNumberOfGuests(), orderTable.isEmpty());
     }
 
     public static TableGroup 테이블_그룹을_저장한다(Long id, LocalDateTime createdDate, List<OrderTable> orderTables) {
