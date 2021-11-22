@@ -23,6 +23,12 @@ public class OrderTableRequest {
         this.empty = empty;
     }
 
+    public static List<OrderTable> toList(List<OrderTableRequest> orderTableRequests) {
+        return orderTableRequests.stream()
+                .map(OrderTableRequest::toEntity)
+                .collect(Collectors.toList());
+    }
+
     public Long getId() {
         return id;
     }
@@ -37,11 +43,5 @@ public class OrderTableRequest {
 
     public OrderTable toEntity() {
         return new OrderTable(null, null, numberOfGuests, empty);
-    }
-
-    public static List<OrderTable> toList(List<OrderTableRequest> orderTableRequests) {
-        return orderTableRequests.stream()
-                .map(OrderTableRequest::toEntity)
-                .collect(Collectors.toList());
     }
 }

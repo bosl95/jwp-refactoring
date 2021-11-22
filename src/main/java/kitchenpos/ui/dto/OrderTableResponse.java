@@ -19,6 +19,21 @@ public class OrderTableResponse {
         this.empty = empty;
     }
 
+    public static OrderTableResponse of(OrderTable orderTable) {
+        return new OrderTableResponse(
+                orderTable.getId(),
+                orderTable.getTableGroupId(),
+                orderTable.getNumberOfGuests(),
+                orderTable.isEmpty()
+        );
+    }
+
+    public static List<OrderTableResponse> toList(List<OrderTable> orderTables) {
+        return orderTables.stream()
+                .map(OrderTableResponse::of)
+                .collect(Collectors.toList());
+    }
+
     public Long getId() {
         return id;
     }
@@ -33,20 +48,5 @@ public class OrderTableResponse {
 
     public boolean isEmpty() {
         return empty;
-    }
-
-    public static OrderTableResponse of(OrderTable orderTable) {
-        return new OrderTableResponse(
-                orderTable.getId(),
-                orderTable.getTableGroupId(),
-                orderTable.getNumberOfGuests(),
-                orderTable.isEmpty()
-        );
-    }
-
-    public static List<OrderTableResponse> toList(List<OrderTable> orderTables) {
-        return orderTables.stream()
-                .map(OrderTableResponse::of)
-                .collect(Collectors.toList());
     }
 }

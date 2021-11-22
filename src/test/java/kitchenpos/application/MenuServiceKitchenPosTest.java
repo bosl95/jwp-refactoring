@@ -11,7 +11,6 @@ import kitchenpos.domain.Product;
 import kitchenpos.ui.dto.MenuProductRequest;
 import kitchenpos.ui.dto.MenuRequest;
 import kitchenpos.ui.dto.MenuResponse;
-import kitchenpos.ui.dto.ProductRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,21 +33,6 @@ import static org.mockito.Mockito.verify;
 @ExtendWith(MockitoExtension.class)
 class MenuServiceKitchenPosTest extends KitchenPosTestFixture {
 
-    @Mock
-    private MenuDao menuDao;
-
-    @Mock
-    private MenuGroupDao menuGroupDao;
-
-    @Mock
-    private MenuProductDao menuProductDao;
-
-    @Mock
-    private ProductDao productDao;
-
-    @InjectMocks
-    private MenuService menuService;
-
     private final Product product = 상품을_저장한다(
             1L,
             "강정치킨",
@@ -60,7 +44,6 @@ class MenuServiceKitchenPosTest extends KitchenPosTestFixture {
             product.getId(),
             2L
     );
-
     private final Menu menu = 메뉴를_저장한다(
             1L,
             "후라이드+후라이드",
@@ -68,18 +51,26 @@ class MenuServiceKitchenPosTest extends KitchenPosTestFixture {
             1L,
             Collections.singletonList(menuProduct)
     );
-
     private final MenuProductRequest menuProductRequest = 메뉴_상품을_요청한다(
             product.getId(),
             menuProduct.getQuantity()
     );
-
     private final MenuRequest menuRequest = 메뉴를_요청한다(
             "강정치킨",
             menu.getPrice(),
             1L,
             Collections.singletonList(menuProductRequest)
     );
+    @Mock
+    private MenuDao menuDao;
+    @Mock
+    private MenuGroupDao menuGroupDao;
+    @Mock
+    private MenuProductDao menuProductDao;
+    @Mock
+    private ProductDao productDao;
+    @InjectMocks
+    private MenuService menuService;
 
     @DisplayName("메뉴를 등록할 수 있다.")
     @Test

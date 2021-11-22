@@ -26,14 +26,12 @@ import static org.mockito.Mockito.verify;
 @ExtendWith(MockitoExtension.class)
 class ProductServiceKitchenPosTest extends KitchenPosTestFixture {
 
-    @Mock
-    private ProductDao productDao;
-
-    @InjectMocks
-    private ProductService productService;
-
     private final ProductRequest firstProductRequest = 상품을_요청한다("강정치킨", BigDecimal.valueOf(1700));
     private final ProductRequest secondProductRequest = 상품을_요청한다("튀김소보로", BigDecimal.valueOf(1200));
+    @Mock
+    private ProductDao productDao;
+    @InjectMocks
+    private ProductService productService;
 
     @DisplayName("상품을 등록할 수 있다.")
     @Test

@@ -3,7 +3,6 @@ package kitchenpos.ui;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kitchenpos.KitchenPosTestFixture;
 import kitchenpos.application.MenuGroupService;
-import kitchenpos.domain.MenuGroup;
 import kitchenpos.ui.dto.MenuGroupResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,18 +28,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(MenuGroupRestController.class)
 class MenuGroupRestControllerTest extends KitchenPosTestFixture {
 
-    @Autowired
-    private MockMvc mvc;
-
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    @MockBean
-    private MenuGroupService menuGroupService;
-
     private final MenuGroupResponse firstMenuGroup = 메뉴_그룹을_응답한다(1L, "추천 메뉴");
     private final MenuGroupResponse secondMenuGroup = 메뉴_그룹을_응답한다(2L, "추천 메뉴2");
     private final MenuGroupResponse thirdMenuGroup = 메뉴_그룹을_응답한다(3L, "추천 메뉴3");
+    @Autowired
+    private MockMvc mvc;
+    @Autowired
+    private ObjectMapper objectMapper;
+    @MockBean
+    private MenuGroupService menuGroupService;
 
     @Test
     void create() throws Exception {

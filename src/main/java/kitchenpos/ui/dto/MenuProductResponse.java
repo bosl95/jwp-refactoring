@@ -19,6 +19,21 @@ public class MenuProductResponse {
         this.quantity = quantity;
     }
 
+    public static MenuProductResponse of(MenuProduct menuProduct) {
+        return new MenuProductResponse(
+                menuProduct.getSeq(),
+                menuProduct.getMenuId(),
+                menuProduct.getProductId(),
+                menuProduct.getQuantity()
+        );
+    }
+
+    public static List<MenuProductResponse> toList(List<MenuProduct> menuProducts) {
+        return menuProducts.stream()
+                .map(MenuProductResponse::of)
+                .collect(Collectors.toList());
+    }
+
     public Long getSeq() {
         return seq;
     }
@@ -33,20 +48,5 @@ public class MenuProductResponse {
 
     public long getQuantity() {
         return quantity;
-    }
-
-    public static MenuProductResponse of(MenuProduct menuProduct) {
-        return new MenuProductResponse(
-                menuProduct.getSeq(),
-                menuProduct.getMenuId(),
-                menuProduct.getProductId(),
-                menuProduct.getQuantity()
-        );
-    }
-
-    public static List<MenuProductResponse> toList(List<MenuProduct> menuProducts) {
-        return menuProducts.stream()
-                .map(MenuProductResponse::of)
-                .collect(Collectors.toList());
     }
 }

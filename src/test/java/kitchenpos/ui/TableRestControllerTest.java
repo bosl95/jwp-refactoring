@@ -30,22 +30,18 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(TableRestController.class)
 class TableRestControllerTest extends KitchenPosTestFixture {
 
-    @Autowired
-    private MockMvc mvc;
-
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    @MockBean
-    private TableService tableService;
-
     private final OrderTableRequest firstOrderTableRequest = 주문_테이블을_요청한다(3, false);
     private final OrderTableResponse firstOrderTableResponse
             = OrderTableResponse.of(주문_테이블을_저장한다(1L, 1L, firstOrderTableRequest));
-
     private final OrderTableRequest secondOrderTableRequest = 주문_테이블을_요청한다(3, true);
     private final OrderTableResponse secondOrderTableResponse
             = OrderTableResponse.of(주문_테이블을_저장한다(2L, 1L, secondOrderTableRequest));
+    @Autowired
+    private MockMvc mvc;
+    @Autowired
+    private ObjectMapper objectMapper;
+    @MockBean
+    private TableService tableService;
 
     @Test
     void create() throws Exception {

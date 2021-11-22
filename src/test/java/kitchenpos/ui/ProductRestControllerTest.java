@@ -30,19 +30,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(ProductRestController.class)
 class ProductRestControllerTest extends KitchenPosTestFixture {
 
+    private final ProductRequest firstProductRequest = 상품을_요청한다("닭강정", BigDecimal.valueOf(1700));
+    private final ProductResponse firstProductResponse = ProductResponse.of(상품을_저장한다(1L, "닭강정", BigDecimal.valueOf(1700)));
+    private final ProductRequest secondProductRequest = 상품을_요청한다("오뎅", BigDecimal.valueOf(500));
+    private final ProductResponse secondProductResponse = ProductResponse.of(상품을_저장한다(2L, "오뎅", BigDecimal.valueOf(500)));
     @Autowired
     private MockMvc mvc;
     @Autowired
     private ObjectMapper objectMapper;
-
     @MockBean
     private ProductService productService;
-
-    private final ProductRequest firstProductRequest = 상품을_요청한다("닭강정", BigDecimal.valueOf(1700));
-    private final ProductResponse firstProductResponse = ProductResponse.of(상품을_저장한다(1L, "닭강정", BigDecimal.valueOf(1700)));
-
-    private final ProductRequest secondProductRequest = 상품을_요청한다("오뎅", BigDecimal.valueOf(500));
-    private final ProductResponse secondProductResponse = ProductResponse.of(상품을_저장한다(2L, "오뎅", BigDecimal.valueOf(500)));
 
     @Test
     void create() throws Exception {

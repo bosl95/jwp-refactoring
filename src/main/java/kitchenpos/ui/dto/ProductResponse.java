@@ -18,18 +18,6 @@ public class ProductResponse {
         this.price = price;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public BigDecimal getPrice() {
-        return price;
-    }
-
     public static ProductResponse of(Product product) {
         return new ProductResponse(
                 product.getId(),
@@ -42,5 +30,17 @@ public class ProductResponse {
         return products.stream()
                 .map(ProductResponse::of)
                 .collect(Collectors.toList());
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public BigDecimal getPrice() {
+        return price;
     }
 }

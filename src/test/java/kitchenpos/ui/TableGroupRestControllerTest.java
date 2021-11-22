@@ -32,18 +32,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(TableGroupRestController.class)
 class TableGroupRestControllerTest extends KitchenPosTestFixture {
 
-    @Autowired
-    private MockMvc mvc;
-
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    @MockBean
-    private TableGroupService tableGroupService;
-
     private final OrderTable firstOrderTable = 주문_테이블을_저장한다(1L, 1L, 3, false);
     private final OrderTable secondOrderTable = 주문_테이블을_저장한다(2L, 1L, 4, false);
     private final TableGroup firstTableGroup = 테이블_그룹을_저장한다(1L, LocalDateTime.now(), Arrays.asList(firstOrderTable, secondOrderTable));
+    @Autowired
+    private MockMvc mvc;
+    @Autowired
+    private ObjectMapper objectMapper;
+    @MockBean
+    private TableGroupService tableGroupService;
 
     @Test
     void create() throws Exception {

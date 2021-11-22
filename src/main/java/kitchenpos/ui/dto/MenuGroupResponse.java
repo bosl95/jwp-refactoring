@@ -15,14 +15,6 @@ public class MenuGroupResponse {
         this.name = name;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
     public static MenuGroupResponse of(MenuGroup menuGroup) {
         return new MenuGroupResponse(
                 menuGroup.getId(),
@@ -34,5 +26,13 @@ public class MenuGroupResponse {
         return menuGroups.stream()
                 .map(MenuGroupResponse::of)
                 .collect(Collectors.toList());
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
     }
 }

@@ -36,25 +36,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(MenuRestController.class)
 class MenuRestControllerTest extends KitchenPosTestFixture {
 
+    MenuProductRequest secondMenuProductRequest = 메뉴_상품을_요청한다(2L, 200L);
     @Autowired
     private MockMvc mvc;
-
     @Autowired
     private ObjectMapper objectMapper;
-
     @MockBean
     private MenuService menuService;
-
-
     private Product firstProduct = 상품을_저장한다(1L, "후라이드", BigDecimal.valueOf(3000));
     private Product secondProduct = 상품을_저장한다(1L, "후라이드", BigDecimal.valueOf(3000));
-
     private MenuProduct firstMenuProduct = 메뉴_상품을_저장한다(1L, 1L, firstProduct.getId(), 100L);
-    private MenuProduct secondMenuProduct = 메뉴_상품을_저장한다(2L, 2L, secondProduct.getId(), 200L);
-
     private Menu firstMenu = 메뉴를_저장한다(1L, "닭강정", BigDecimal.valueOf(1000), 1L, Collections.singletonList(firstMenuProduct));
-    private Menu secondMenu = 메뉴를_저장한다(2L,"menu2",BigDecimal.valueOf(3000), 1L,Collections.singletonList(secondMenuProduct));
-
     MenuProductRequest firstMenuProductRequest = 메뉴_상품을_요청한다(firstMenuProduct.getProductId(), firstMenuProduct.getQuantity());
     MenuRequest firstMenuRequest = 메뉴를_요청한다(
             "닭강정",
@@ -62,8 +54,8 @@ class MenuRestControllerTest extends KitchenPosTestFixture {
             1L,
             Collections.singletonList(firstMenuProductRequest)
     );
-
-    MenuProductRequest secondMenuProductRequest = 메뉴_상품을_요청한다(2L, 200L);
+    private MenuProduct secondMenuProduct = 메뉴_상품을_저장한다(2L, 2L, secondProduct.getId(), 200L);
+    private Menu secondMenu = 메뉴를_저장한다(2L, "menu2", BigDecimal.valueOf(3000), 1L, Collections.singletonList(secondMenuProduct));
     private MenuRequest secondMenuRequest = 메뉴를_요청한다(
             "떡볶이",
             BigDecimal.valueOf(3000),
