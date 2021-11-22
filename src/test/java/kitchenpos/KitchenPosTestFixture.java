@@ -108,6 +108,10 @@ public class KitchenPosTestFixture {
         return menuProduct;
     }
 
+    public static OrderRequest 주문을_요청한다(Long orderTableId, List<OrderLineItemRequest> orderLineItemRequests) {
+        return new OrderRequest(orderTableId, orderLineItemRequests);
+    }
+
     public static Order 주문을_저장한다(Long id, Long orderTableId, String orderStatus, LocalDateTime orderedTime, List<OrderLineItem> orderLineItems) {
         Order order = new Order();
         order.setId(id);
@@ -120,6 +124,10 @@ public class KitchenPosTestFixture {
 
     public static Order 주문을_저장한다(Long id, Order order) {
         return 주문을_저장한다(id, order.getOrderTableId(), order.getOrderStatus(), order.getOrderedTime(), order.getOrderLineItems());
+    }
+
+    public static OrderLineItemRequest 주문_항목을_요청한다(Long menuId, long quantity) {
+        return new OrderLineItemRequest(menuId, quantity);
     }
 
     public static OrderLineItem 주문_항목을_저장한다(Long id, Long orderId, Long menuId, Long quantity) {
