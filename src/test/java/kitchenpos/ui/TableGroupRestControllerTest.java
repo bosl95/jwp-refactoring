@@ -5,6 +5,8 @@ import kitchenpos.KitchenPosTestFixture;
 import kitchenpos.application.TableGroupService;
 import kitchenpos.domain.OrderTable;
 import kitchenpos.domain.TableGroup;
+import kitchenpos.ui.dto.TableGroupRequest;
+import kitchenpos.ui.dto.TableGroupResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -47,7 +49,7 @@ class TableGroupRestControllerTest extends KitchenPosTestFixture {
     void create() throws Exception {
         // given
         // when
-        given(tableGroupService.create(any(TableGroup.class))).willReturn(firstTableGroup);
+        given(tableGroupService.create(any(TableGroupRequest.class))).willReturn(TableGroupResponse.of(firstTableGroup));
 
         // then
         mvc.perform(post("/api/table-groups")

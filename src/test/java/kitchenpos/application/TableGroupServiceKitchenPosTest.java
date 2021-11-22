@@ -6,7 +6,9 @@ import kitchenpos.dao.OrderTableDao;
 import kitchenpos.dao.TableGroupDao;
 import kitchenpos.domain.OrderTable;
 import kitchenpos.domain.TableGroup;
-import org.junit.jupiter.api.BeforeEach;
+import kitchenpos.ui.dto.OrderTableRequest;
+import kitchenpos.ui.dto.TableGroupRequest;
+import kitchenpos.ui.dto.TableGroupResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,9 +33,19 @@ import static org.mockito.Mockito.verify;
 @ExtendWith(MockitoExtension.class)
 class TableGroupServiceKitchenPosTest extends KitchenPosTestFixture {
 
-    OrderTable firstOrderTable;
-    OrderTable secondOrderTable;
-    TableGroup tableGroup;
+    private OrderTableRequest firstOrderTableRequest = 주문_테이블을_요청한다(1L);
+    private OrderTableRequest secondOrderTableRequest = 주문_테이블을_요청한다(2L);
+
+    private TableGroupRequest tableGroupRequest = 테이블_그룹을_요청한다(
+            LocalDateTime.now(),
+            Arrays.asList(firstOrderTableRequest, secondOrderTableRequest)
+    );
+
+    private OrderTable firstOrderTable = 주문_테이블을_저장한다(1L, null, 3, true);
+    private OrderTable secondOrderTable = 주문_테이블을_저장한다(2L, null, 2, true);
+
+    private TableGroup savedTableGroup = 테이블_그룹을_저장한다(1L, LocalDateTime.now(), Arrays.asList(firstOrderTable, secondOrderTable));
+
     @Mock
     private OrderDao orderDao;
     @Mock
@@ -43,28 +55,22 @@ class TableGroupServiceKitchenPosTest extends KitchenPosTestFixture {
     @InjectMocks
     private TableGroupService tableGroupService;
 
-    @BeforeEach
-    void setUp() {
-        firstOrderTable = 주문_테이블을_저장한다(1L, null, 3, true);
-        secondOrderTable = 주문_테이블을_저장한다(2L, null, 2, true);
-        tableGroup = 테이블_그룹을_저장한다(null, LocalDateTime.now(), Arrays.asList(firstOrderTable, secondOrderTable));
-    }
-
     @DisplayName("주문 테이블 그룹을 등록한다.")
     @Test
     void create() {
         // given
-        List<Long> orderTableIds = Arrays.asList(firstOrderTable.getId(), secondOrderTable.getId());
+        List<Long> orderTableIds = Arrays.asList(firstOrderTableRequest.getId(), secondOrderTableRequest.getId());
         given(orderTableDao.findAllByIdIn(orderTableIds)).willReturn(Arrays.asList(firstOrderTable, secondOrderTable));
-        given(tableGroupDao.save(tableGroup)).willReturn(tableGroup);
+        given(tableGroupDao.save(any(TableGroup.class))).willReturn(savedTableGroup);
 
         // when
-        TableGroup savedTableGroup = tableGroupService.create(tableGroup);
+        TableGroupResponse createdTableGroup = tableGroupService.create(tableGroupRequest);
 
         // then
-        assertThat(savedTableGroup).isEqualTo(tableGroup);
+        assertThat(createdTableGroup).usingRecursiveComparison().isEqualTo(TableGroupResponse.of(savedTableGroup));
+
         verify(orderTableDao, times(1)).findAllByIdIn(orderTableIds);
-        verify(tableGroupDao, times(1)).save(tableGroup);
+        verify(tableGroupDao, times(1)).save(any(TableGroup.class));
         verify(orderTableDao, times(orderTableIds.size())).save(any(OrderTable.class));
     }
 
@@ -72,35 +78,35 @@ class TableGroupServiceKitchenPosTest extends KitchenPosTestFixture {
     @Test
     void validateTableGroupCreateWhenEmptyOrderTable() {
         // when
-        tableGroup.setOrderTables(Collections.emptyList());
+        TableGroupRequest invalidTableGroupRequest = 테이블_그룹을_요청한다(LocalDateTime.now(), Collections.emptyList());
 
         // then
-        assertThatThrownBy(() -> tableGroupService.create(tableGroup)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> tableGroupService.create(invalidTableGroupRequest)).isInstanceOf(IllegalArgumentException.class);
     }
 
-    @DisplayName("주문 테이블이 없거나 주문 테이블 크기가 2 미만 작은 경우 등록할 수 없다.")
+    @DisplayName("주문 테이블 크기가 2 미만 작은 경우 등록할 수 없다.")
     @Test
     void validateTableGroupCreateWhenOrderTableSizeLessThanTwo() {
         // when
-        tableGroup.setOrderTables(Collections.singletonList(firstOrderTable));
+        TableGroupRequest invalidTableGroupRequest = 테이블_그룹을_요청한다(LocalDateTime.now(), Collections.singletonList(주문_테이블을_요청한다(firstOrderTable.getId())));
 
         // then
-        assertThatThrownBy(() -> tableGroupService.create(tableGroup)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> tableGroupService.create(invalidTableGroupRequest)).isInstanceOf(IllegalArgumentException.class);
     }
 
-    @DisplayName("주분 테이블 번호를 통해 찾은 테이블 개수가 번호 개수와 같지 않은 경우 등록할 수 없다.")
+    @DisplayName("주문 테이블 번호를 통해 찾은 테이블 개수가 번호 개수와 같지 않은 경우 등록할 수 없다.")
     @Test
     void validateOrderTableSizeAndOrderTableIdsCount() {
         // given
-        List<Long> orderTableIds = tableGroup.getOrderTables()
+        List<Long> orderTableIds = tableGroupRequest.getOrderTables()
                 .stream()
-                .map(OrderTable::getId)
+                .map(OrderTableRequest::getId)
                 .collect(Collectors.toList());
         given(orderTableDao.findAllByIdIn(orderTableIds)).willReturn(Collections.singletonList(firstOrderTable));
 
         // when
         // then
-        assertThatThrownBy(() -> tableGroupService.create(tableGroup)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> tableGroupService.create(tableGroupRequest)).isInstanceOf(IllegalArgumentException.class);
         verify(orderTableDao, times(1)).findAllByIdIn(orderTableIds);
     }
 
@@ -108,20 +114,20 @@ class TableGroupServiceKitchenPosTest extends KitchenPosTestFixture {
     @Test
     void validateOrderTable() {
         // given
-        List<Long> orderTableIds = tableGroup.getOrderTables()
+        List<Long> orderTableIds = tableGroupRequest.getOrderTables()
                 .stream()
-                .map(OrderTable::getId)
+                .map(OrderTableRequest::getId)
                 .collect(Collectors.toList());
 
         // when
         // then
         OrderTable findOrderTable = 주문_테이블을_저장한다(3L, null, 1, false);
         given(orderTableDao.findAllByIdIn(orderTableIds)).willReturn(Collections.singletonList(findOrderTable));
-        assertThatThrownBy(() -> tableGroupService.create(tableGroup)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> tableGroupService.create(tableGroupRequest)).isInstanceOf(IllegalArgumentException.class);
 
         findOrderTable = 주문_테이블을_저장한다(3L, 3L, 1, true);
         given(orderTableDao.findAllByIdIn(orderTableIds)).willReturn(Collections.singletonList(findOrderTable));
-        assertThatThrownBy(() -> tableGroupService.create(tableGroup)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> tableGroupService.create(tableGroupRequest)).isInstanceOf(IllegalArgumentException.class);
 
         verify(orderTableDao, times(orderTableIds.size())).findAllByIdIn(orderTableIds);
     }

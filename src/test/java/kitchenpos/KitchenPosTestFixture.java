@@ -1,10 +1,7 @@
 package kitchenpos;
 
 import kitchenpos.domain.*;
-import kitchenpos.ui.dto.MenuGroupRequest;
-import kitchenpos.ui.dto.MenuGroupResponse;
-import kitchenpos.ui.dto.OrderTableRequest;
-import kitchenpos.ui.dto.ProductRequest;
+import kitchenpos.ui.dto.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -64,6 +61,10 @@ public class KitchenPosTestFixture {
         return new OrderTableRequest(numberOfGuests, empty);
     }
 
+    public static OrderTableRequest 주문_테이블을_요청한다(Long orderTableId) {
+        return new OrderTableRequest(orderTableId);
+    }
+
     public static OrderTable 주문_테이블을_저장한다(Long id, Long tableGroupId, int numberOfGuests, boolean empty) {
         return new OrderTable(id, tableGroupId, numberOfGuests, empty);
     }
@@ -82,6 +83,12 @@ public class KitchenPosTestFixture {
         tableGroup.setCreatedDate(createdDate);
         tableGroup.setOrderTables(orderTables);
         return tableGroup;
+    }
+
+    public static TableGroupRequest 테이블_그룹을_요청한다(LocalDateTime createdDate, List<OrderTableRequest> orderTables) {
+        TableGroupRequest tableGroupRequest = new TableGroupRequest(orderTables);
+        tableGroupRequest.setCreatedDate(createdDate);
+        return tableGroupRequest;
     }
 
     public static MenuProduct 메뉴_상품을_저장한다(Long seq, Long menuId, Long productId, long quantity) {
