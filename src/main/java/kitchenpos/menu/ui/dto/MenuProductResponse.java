@@ -7,10 +7,10 @@ import java.util.stream.Collectors;
 
 public class MenuProductResponse {
 
-    private Long seq;
-    private Long menuId;
-    private Long productId;
-    private long quantity;
+    private final Long seq;
+    private final Long menuId;
+    private final Long productId;
+    private final long quantity;
 
     public MenuProductResponse(Long seq, Long menuId, Long productId, long quantity) {
         this.seq = seq;

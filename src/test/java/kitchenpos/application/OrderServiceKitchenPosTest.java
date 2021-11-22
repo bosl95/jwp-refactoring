@@ -40,7 +40,19 @@ import static org.mockito.Mockito.verify;
 @ExtendWith(MockitoExtension.class)
 class OrderServiceKitchenPosTest extends KitchenPosTestFixture {
 
+    @Mock
+    private MenuDao menuDao;
+    @Mock
+    private OrderDao orderDao;
+    @Mock
+    private OrderLineItemDao orderLineItemDao;
+    @Mock
+    private OrderTableDao orderTableDao;
+    @InjectMocks
+    private OrderService orderService;
+
     public static final long MENU_ID = 1L;
+
     private final Product product = 상품을_저장한다(
             1L,
             "강정치킨",
@@ -59,13 +71,23 @@ class OrderServiceKitchenPosTest extends KitchenPosTestFixture {
             null,
             Collections.singletonList(menuProduct)
     );
+
+    private final OrderTable orderTable = 주문_테이블을_저장한다(
+            1L,
+            null,
+            2,
+            false
+    );
+
     private final OrderLineItem orderLineItem = 주문_항목을_저장한다(
             1L,
             orderTable.getId(),
             menu.getId(),
             menuProduct.getQuantity()
     );
+
     List<OrderLineItem> orderLineItems = Collections.singletonList(orderLineItem);
+
     private final Order completionStatusOrder = 주문을_저장한다(
             1L,
             orderTable.getId(),
@@ -73,6 +95,7 @@ class OrderServiceKitchenPosTest extends KitchenPosTestFixture {
             LocalDateTime.now(),
             orderLineItems
     );
+
     private final Order mealStatusOrder = 주문을_저장한다(
             2L,
             orderTable.getId(),
@@ -80,22 +103,6 @@ class OrderServiceKitchenPosTest extends KitchenPosTestFixture {
             LocalDateTime.now(),
             orderLineItems
     );
-    private final OrderTable orderTable = 주문_테이블을_저장한다(
-            1L,
-            null,
-            2,
-            false
-    );
-    @Mock
-    private MenuDao menuDao;
-    @Mock
-    private OrderDao orderDao;
-    @Mock
-    private OrderLineItemDao orderLineItemDao;
-    @Mock
-    private OrderTableDao orderTableDao;
-    @InjectMocks
-    private OrderService orderService;
 
     @DisplayName("메뉴를 주문할 수 있다.")
     @Test
