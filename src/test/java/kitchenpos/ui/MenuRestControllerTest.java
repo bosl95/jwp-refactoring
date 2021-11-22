@@ -5,9 +5,11 @@ import kitchenpos.KitchenPosTestFixture;
 import kitchenpos.application.MenuService;
 import kitchenpos.domain.Menu;
 import kitchenpos.domain.MenuProduct;
-import org.junit.jupiter.api.BeforeEach;
+import kitchenpos.domain.Product;
+import kitchenpos.ui.dto.MenuProductRequest;
+import kitchenpos.ui.dto.MenuRequest;
+import kitchenpos.ui.dto.MenuResponse;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -23,6 +25,7 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -42,26 +45,41 @@ class MenuRestControllerTest extends KitchenPosTestFixture {
     @MockBean
     private MenuService menuService;
 
-    private Menu firstMenu;
-    private Menu secondMenu;
 
-    @BeforeEach
-    void setUp() {
-        MenuProduct firstMenuProduct = 메뉴_상품을_저장한다(1L, 1L, 1L, 100L);
-        MenuProduct secondMenuProduct = 메뉴_상품을_저장한다(2L, 2L, 2L, 200L);
-        firstMenu = 메뉴를_저장한다(1L, "닭강정", BigDecimal.valueOf(1000), 1L, Collections.singletonList(firstMenuProduct));
-        secondMenu = 메뉴를_저장한다(2L, "menu2", BigDecimal.valueOf(3000), 1L, Collections.singletonList(secondMenuProduct));
-    }
+    private Product firstProduct = 상품을_저장한다(1L, "후라이드", BigDecimal.valueOf(3000));
+    private Product secondProduct = 상품을_저장한다(1L, "후라이드", BigDecimal.valueOf(3000));
+
+    private MenuProduct firstMenuProduct = 메뉴_상품을_저장한다(1L, 1L, firstProduct.getId(), 100L);
+    private MenuProduct secondMenuProduct = 메뉴_상품을_저장한다(2L, 2L, secondProduct.getId(), 200L);
+
+    private Menu firstMenu = 메뉴를_저장한다(1L, "닭강정", BigDecimal.valueOf(1000), 1L, Collections.singletonList(firstMenuProduct));
+    private Menu secondMenu = 메뉴를_저장한다(2L,"menu2",BigDecimal.valueOf(3000), 1L,Collections.singletonList(secondMenuProduct));
+
+    MenuProductRequest firstMenuProductRequest = 메뉴_상품을_요청한다(firstMenuProduct.getProductId(), firstMenuProduct.getQuantity());
+    MenuRequest firstMenuRequest = 메뉴를_요청한다(
+            "닭강정",
+            BigDecimal.valueOf(1000),
+            1L,
+            Collections.singletonList(firstMenuProductRequest)
+    );
+
+    MenuProductRequest secondMenuProductRequest = 메뉴_상품을_요청한다(2L, 200L);
+    private MenuRequest secondMenuRequest = 메뉴를_요청한다(
+            "떡볶이",
+            BigDecimal.valueOf(3000),
+            1L,
+            Collections.singletonList(secondMenuProductRequest)
+    );
 
     @Test
     void create() throws Exception {
         // given
         // when
-        given(menuService.create(ArgumentMatchers.any())).willReturn(firstMenu);
+        given(menuService.create(any(MenuRequest.class))).willReturn(MenuResponse.of(firstMenu));
 
         // then
         mvc.perform(post("/api/menus")
-                        .content(objectMapper.writeValueAsString(firstMenu))
+                        .content(objectMapper.writeValueAsString(firstMenuRequest))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
@@ -78,7 +96,7 @@ class MenuRestControllerTest extends KitchenPosTestFixture {
         List<Menu> menus = Arrays.asList(firstMenu, secondMenu);
 
         // when
-        given(menuService.list()).willReturn(menus);
+        given(menuService.list()).willReturn(MenuResponse.toList(menus));
 
         // then
         mvc.perform(MockMvcRequestBuilders.get("/api/menus")

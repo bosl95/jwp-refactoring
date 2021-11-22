@@ -7,6 +7,9 @@ import kitchenpos.dao.ProductDao;
 import kitchenpos.domain.Menu;
 import kitchenpos.domain.MenuProduct;
 import kitchenpos.domain.Product;
+import kitchenpos.ui.dto.MenuProductRequest;
+import kitchenpos.ui.dto.MenuRequest;
+import kitchenpos.ui.dto.MenuResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,21 +38,21 @@ public class MenuService {
     }
 
     @Transactional
-    public Menu create(final Menu menu) {
-        final BigDecimal price = menu.getPrice();
+    public MenuResponse create(final MenuRequest menuRequest) {
+        final BigDecimal price = menuRequest.getPrice();
 
         if (Objects.isNull(price) || price.compareTo(BigDecimal.ZERO) < 0) {
             throw new IllegalArgumentException();
         }
 
-        if (!menuGroupDao.existsById(menu.getMenuGroupId())) {
+        if (!menuGroupDao.existsById(menuRequest.getMenuGroupId())) {
             throw new IllegalArgumentException();
         }
 
-        final List<MenuProduct> menuProducts = menu.getMenuProducts();
+        final List<MenuProductRequest> menuProducts = menuRequest.getMenuProducts();
 
         BigDecimal sum = BigDecimal.ZERO;
-        for (final MenuProduct menuProduct : menuProducts) {
+        for (final MenuProductRequest menuProduct : menuProducts) {
             final Product product = productDao.findById(menuProduct.getProductId())
                     .orElseThrow(IllegalArgumentException::new);
             sum = sum.add(product.getPrice().multiply(BigDecimal.valueOf(menuProduct.getQuantity())));
@@ -59,26 +62,26 @@ public class MenuService {
             throw new IllegalArgumentException();
         }
 
-        final Menu savedMenu = menuDao.save(menu);
+        final Menu savedMenu = menuDao.save(menuRequest.toEntity());
 
         final Long menuId = savedMenu.getId();
         final List<MenuProduct> savedMenuProducts = new ArrayList<>();
-        for (final MenuProduct menuProduct : menuProducts) {
+        for (final MenuProductRequest menuProduct : menuProducts) {
             menuProduct.setMenuId(menuId);
-            savedMenuProducts.add(menuProductDao.save(menuProduct));
+            savedMenuProducts.add(menuProductDao.save(menuProduct.toEntity()));
         }
         savedMenu.setMenuProducts(savedMenuProducts);
 
-        return savedMenu;
+        return MenuResponse.of(savedMenu);
     }
 
-    public List<Menu> list() {
+    public List<MenuResponse> list() {
         final List<Menu> menus = menuDao.findAll();
 
         for (final Menu menu : menus) {
             menu.setMenuProducts(menuProductDao.findAllByMenuId(menu.getId()));
         }
 
-        return menus;
+        return MenuResponse.toList(menus);
     }
 }

@@ -8,7 +8,10 @@ import kitchenpos.dao.ProductDao;
 import kitchenpos.domain.Menu;
 import kitchenpos.domain.MenuProduct;
 import kitchenpos.domain.Product;
-import org.junit.jupiter.api.BeforeEach;
+import kitchenpos.ui.dto.MenuProductRequest;
+import kitchenpos.ui.dto.MenuRequest;
+import kitchenpos.ui.dto.MenuResponse;
+import kitchenpos.ui.dto.ProductRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,6 +26,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -45,50 +49,55 @@ class MenuServiceKitchenPosTest extends KitchenPosTestFixture {
     @InjectMocks
     private MenuService menuService;
 
-    private MenuProduct menuProduct;
-    private Product product;
-    private Menu menu;
+    private final Product product = 상품을_저장한다(
+            1L,
+            "강정치킨",
+            BigDecimal.valueOf(17000)
+    );
+    private final MenuProduct menuProduct = 메뉴_상품을_저장한다(
+            1L,
+            1L,
+            product.getId(),
+            2L
+    );
 
-    @BeforeEach
-    void setUp() {
-        product = 상품을_저장한다(
-                1L,
-                "강정치킨",
-                BigDecimal.valueOf(17000)
-        );
-        menuProduct = 메뉴_상품을_저장한다(
-                1L,
-                null,
-                product.getId(),
-                2L
-        );
-        menu = 메뉴를_저장한다(
-                null,
-                "후라이드+후라이드",
-                BigDecimal.valueOf(19000),
-                1L,
-                Collections.singletonList(menuProduct)
-        );
-    }
+    private final Menu menu = 메뉴를_저장한다(
+            1L,
+            "후라이드+후라이드",
+            BigDecimal.valueOf(19000),
+            1L,
+            Collections.singletonList(menuProduct)
+    );
+
+    private final MenuProductRequest menuProductRequest = 메뉴_상품을_요청한다(
+            product.getId(),
+            menuProduct.getQuantity()
+    );
+
+    private final MenuRequest menuRequest = 메뉴를_요청한다(
+            "강정치킨",
+            menu.getPrice(),
+            1L,
+            Collections.singletonList(menuProductRequest)
+    );
 
     @DisplayName("메뉴를 등록할 수 있다.")
     @Test
     void create() {
         // given
-        given(menuGroupDao.existsById(menu.getMenuGroupId())).willReturn(true);
-        given(productDao.findById(menuProduct.getProductId())).willReturn(Optional.of(product));
-
-        Menu expected = 메뉴를_저장한다(1L, menu);
-        given(menuDao.save(menu)).willReturn(expected);
+        given(menuGroupDao.existsById(menuRequest.getMenuGroupId())).willReturn(true);
+        given(productDao.findById(any(Long.class))).willReturn(Optional.of(product));
+        given(menuDao.save(any(Menu.class))).willReturn(menu);
+        given(menuProductDao.save(any(MenuProduct.class))).willReturn(menuProduct);
 
         // when
-        Menu savedMenu = menuService.create(menu);
+        MenuResponse savedMenu = menuService.create(menuRequest);
 
         // then
-        assertThat(savedMenu).isEqualTo(expected);
+        assertThat(savedMenu).usingRecursiveComparison().isEqualTo(MenuResponse.of(menu));
         verify(menuGroupDao, times(1)).existsById(menu.getMenuGroupId());
         verify(productDao, times(1)).findById(menuProduct.getProductId());
-        verify(menuDao, times(1)).save(menu);
+        verify(menuDao, times(1)).save(any(Menu.class));
     }
 
     @DisplayName("메뉴를 조회할 수 있다.")
@@ -101,10 +110,10 @@ class MenuServiceKitchenPosTest extends KitchenPosTestFixture {
         given(menuProductDao.findAllByMenuId(savedMenu.getId())).willReturn(Collections.singletonList(menuProduct));
 
         // when
-        List<Menu> findMenus = menuService.list();
+        List<MenuResponse> findMenus = menuService.list();
 
         // then
-        assertThat(findMenus).isEqualTo(Collections.singletonList(savedMenu));
+        assertThat(findMenus).usingRecursiveComparison().isEqualTo(Collections.singletonList(MenuResponse.of(savedMenu)));
         verify(menuDao, times(1)).findAll();
         verify(menuProductDao, times(1)).findAllByMenuId(savedMenu.getId());
     }
@@ -113,19 +122,31 @@ class MenuServiceKitchenPosTest extends KitchenPosTestFixture {
     @Test
     void validateMenuPriceLength() {
         // when
-        menu.setPrice(BigDecimal.valueOf(-1));
+        MenuRequest invalidMenuPriceRequest = new MenuRequest(
+                menuRequest.getName(),
+                BigDecimal.valueOf(-1),
+                menuRequest.getMenuGroupId(),
+                menuRequest.getMenuProducts()
+        );
 
         // then
-        assertThatThrownBy(() -> menuService.create(menu)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> menuService.create(invalidMenuPriceRequest)).isInstanceOf(IllegalArgumentException.class);
     }
 
     @DisplayName("메뉴 제품 양은 0 이상이어야한다.")
     @Test
     void validateMenuProduct() {
         // when
+        MenuProductRequest menuProductRequest = 메뉴_상품을_요청한다(product.getId(), -1L);
+        MenuRequest invalidMenuPriceRequest = new MenuRequest(
+                menuRequest.getName(),
+                menuRequest.getPrice(),
+                menuRequest.getMenuGroupId(),
+                Collections.singletonList(menuProductRequest)
+        );
         menu.getMenuProducts().get(0).setQuantity(-1);
 
         // then
-        assertThatThrownBy(() -> menuService.create(menu)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> menuService.create(invalidMenuPriceRequest)).isInstanceOf(IllegalArgumentException.class);
     }
 }

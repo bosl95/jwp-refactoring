@@ -31,6 +31,10 @@ public class KitchenPosTestFixture {
         return 상품을_저장한다(id, productRequest.getName(), productRequest.getPrice());
     }
 
+    public static MenuRequest 메뉴를_요청한다(String name, BigDecimal price, Long menuGroupId, List<MenuProductRequest> menuProducts) {
+        return new MenuRequest(name, price, menuGroupId, menuProducts);
+    }
+
     public static Menu 메뉴를_저장한다(Long id, String name, BigDecimal price, Long menuGroupId, List<MenuProduct> menuProducts) {
         Menu savedMenu = new Menu();
         savedMenu.setId(id);
@@ -89,6 +93,10 @@ public class KitchenPosTestFixture {
         TableGroupRequest tableGroupRequest = new TableGroupRequest(orderTables);
         tableGroupRequest.setCreatedDate(createdDate);
         return tableGroupRequest;
+    }
+
+    public static MenuProductRequest 메뉴_상품을_요청한다(Long productId, Long quantity) {
+        return new MenuProductRequest(productId, quantity);
     }
 
     public static MenuProduct 메뉴_상품을_저장한다(Long seq, Long menuId, Long productId, long quantity) {
