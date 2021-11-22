@@ -2,11 +2,12 @@ package kitchenpos.ui;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kitchenpos.KitchenPosTestFixture;
-import kitchenpos.application.TableGroupService;
-import kitchenpos.domain.OrderTable;
-import kitchenpos.domain.TableGroup;
-import kitchenpos.ui.dto.TableGroupRequest;
-import kitchenpos.ui.dto.TableGroupResponse;
+import kitchenpos.table.domain.OrderTable;
+import kitchenpos.tablegroup.application.TableGroupService;
+import kitchenpos.tablegroup.domain.TableGroup;
+import kitchenpos.tablegroup.ui.TableGroupRestController;
+import kitchenpos.tablegroup.ui.dto.TableGroupRequest;
+import kitchenpos.tablegroup.ui.dto.TableGroupResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;

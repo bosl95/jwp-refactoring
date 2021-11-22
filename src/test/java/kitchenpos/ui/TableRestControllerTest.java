@@ -2,9 +2,10 @@ package kitchenpos.ui;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kitchenpos.KitchenPosTestFixture;
-import kitchenpos.application.TableService;
-import kitchenpos.ui.dto.OrderTableRequest;
-import kitchenpos.ui.dto.OrderTableResponse;
+import kitchenpos.table.application.TableService;
+import kitchenpos.table.ui.TableRestController;
+import kitchenpos.table.ui.dto.OrderTableRequest;
+import kitchenpos.table.ui.dto.OrderTableResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;

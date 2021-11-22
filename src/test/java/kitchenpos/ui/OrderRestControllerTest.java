@@ -2,14 +2,15 @@ package kitchenpos.ui;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kitchenpos.KitchenPosTestFixture;
-import kitchenpos.application.OrderService;
-import kitchenpos.domain.Order;
-import kitchenpos.domain.OrderLineItem;
-import kitchenpos.domain.OrderStatus;
-import kitchenpos.ui.dto.OrderLineItemRequest;
-import kitchenpos.ui.dto.OrderRequest;
-import kitchenpos.ui.dto.OrderResponse;
-import kitchenpos.ui.dto.OrderStatusRequest;
+import kitchenpos.order.application.OrderService;
+import kitchenpos.order.domain.Order;
+import kitchenpos.order.domain.OrderLineItem;
+import kitchenpos.order.domain.OrderStatus;
+import kitchenpos.order.ui.OrderRestController;
+import kitchenpos.order.ui.dto.OrderLineItemRequest;
+import kitchenpos.order.ui.dto.OrderRequest;
+import kitchenpos.order.ui.dto.OrderResponse;
+import kitchenpos.order.ui.dto.OrderStatusRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -35,16 +36,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(OrderRestController.class)
 class OrderRestControllerTest extends KitchenPosTestFixture {
 
-    @Autowired
-    private MockMvc mvc;
-    @Autowired
-    private ObjectMapper objectMapper;
-    @MockBean
-    private OrderService orderService;
-
     private final OrderLineItem orderLineItem1 = 주문_항목을_저장한다(1L, 1L, 1L, 1000L);
     private final OrderLineItem orderLineItem2 = 주문_항목을_저장한다(2L, 2L, 2L, 1000L);
-
     private final Order firstOrder = 주문을_저장한다(
             1L,
             1L,
@@ -59,16 +52,20 @@ class OrderRestControllerTest extends KitchenPosTestFixture {
             LocalDateTime.now(),
             Collections.singletonList(orderLineItem2)
     );
-
     private final OrderLineItemRequest firstOrderLineItemRequest = 주문_항목을_요청한다(
             orderLineItem1.getMenuId(),
             orderLineItem1.getQuantity()
     );
-
     private final OrderRequest firstOrderRequest = 주문을_요청한다(
             firstOrder.getOrderTableId(),
             Collections.singletonList(firstOrderLineItemRequest)
     );
+    @Autowired
+    private MockMvc mvc;
+    @Autowired
+    private ObjectMapper objectMapper;
+    @MockBean
+    private OrderService orderService;
 
     @Test
     void create() throws Exception {

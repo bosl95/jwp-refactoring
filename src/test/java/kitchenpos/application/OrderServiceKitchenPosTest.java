@@ -1,15 +1,22 @@
 package kitchenpos.application;
 
 import kitchenpos.KitchenPosTestFixture;
-import kitchenpos.dao.MenuDao;
-import kitchenpos.dao.OrderDao;
-import kitchenpos.dao.OrderLineItemDao;
-import kitchenpos.dao.OrderTableDao;
-import kitchenpos.domain.*;
-import kitchenpos.ui.dto.OrderLineItemRequest;
-import kitchenpos.ui.dto.OrderRequest;
-import kitchenpos.ui.dto.OrderResponse;
-import kitchenpos.ui.dto.OrderStatusRequest;
+import kitchenpos.menu.dao.MenuDao;
+import kitchenpos.menu.domain.Menu;
+import kitchenpos.menu.domain.MenuProduct;
+import kitchenpos.order.application.OrderService;
+import kitchenpos.order.dao.OrderDao;
+import kitchenpos.order.dao.OrderLineItemDao;
+import kitchenpos.order.dao.OrderTableDao;
+import kitchenpos.order.domain.Order;
+import kitchenpos.order.domain.OrderLineItem;
+import kitchenpos.order.domain.OrderStatus;
+import kitchenpos.order.ui.dto.OrderLineItemRequest;
+import kitchenpos.order.ui.dto.OrderRequest;
+import kitchenpos.order.ui.dto.OrderResponse;
+import kitchenpos.order.ui.dto.OrderStatusRequest;
+import kitchenpos.product.domain.Product;
+import kitchenpos.table.domain.OrderTable;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,35 +41,17 @@ import static org.mockito.Mockito.verify;
 class OrderServiceKitchenPosTest extends KitchenPosTestFixture {
 
     public static final long MENU_ID = 1L;
-
-    @Mock
-    private MenuDao menuDao;
-
-    @Mock
-    private OrderDao orderDao;
-
-    @Mock
-    private OrderLineItemDao orderLineItemDao;
-
-    @Mock
-    private OrderTableDao orderTableDao;
-
-    @InjectMocks
-    private OrderService orderService;
-
     private final Product product = 상품을_저장한다(
             1L,
             "강정치킨",
             BigDecimal.valueOf(17000)
     );
-
     private final MenuProduct menuProduct = 메뉴_상품을_저장한다(
             1L,
             MENU_ID,
             product.getId(),
             2L
     );
-
     private final Menu menu = 메뉴를_저장한다(
             MENU_ID,
             "후라이드+후라이드",
@@ -70,31 +59,20 @@ class OrderServiceKitchenPosTest extends KitchenPosTestFixture {
             null,
             Collections.singletonList(menuProduct)
     );
-
-    private final OrderTable orderTable = 주문_테이블을_저장한다(
-            1L,
-            null,
-            2,
-            false
-    );
-
     private final OrderLineItem orderLineItem = 주문_항목을_저장한다(
             1L,
             orderTable.getId(),
             menu.getId(),
             menuProduct.getQuantity()
     );
-
     List<OrderLineItem> orderLineItems = Collections.singletonList(orderLineItem);
-
     private final Order completionStatusOrder = 주문을_저장한다(
             1L,
             orderTable.getId(),
             OrderStatus.COMPLETION.name(),
             LocalDateTime.now(),
             orderLineItems
-        );
-
+    );
     private final Order mealStatusOrder = 주문을_저장한다(
             2L,
             orderTable.getId(),
@@ -102,6 +80,22 @@ class OrderServiceKitchenPosTest extends KitchenPosTestFixture {
             LocalDateTime.now(),
             orderLineItems
     );
+    private final OrderTable orderTable = 주문_테이블을_저장한다(
+            1L,
+            null,
+            2,
+            false
+    );
+    @Mock
+    private MenuDao menuDao;
+    @Mock
+    private OrderDao orderDao;
+    @Mock
+    private OrderLineItemDao orderLineItemDao;
+    @Mock
+    private OrderTableDao orderTableDao;
+    @InjectMocks
+    private OrderService orderService;
 
     @DisplayName("메뉴를 주문할 수 있다.")
     @Test

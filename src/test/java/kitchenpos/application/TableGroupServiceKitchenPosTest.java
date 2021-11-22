@@ -1,14 +1,15 @@
 package kitchenpos.application;
 
 import kitchenpos.KitchenPosTestFixture;
-import kitchenpos.dao.OrderDao;
-import kitchenpos.dao.OrderTableDao;
-import kitchenpos.dao.TableGroupDao;
-import kitchenpos.domain.OrderTable;
-import kitchenpos.domain.TableGroup;
-import kitchenpos.ui.dto.OrderTableRequest;
-import kitchenpos.ui.dto.TableGroupRequest;
-import kitchenpos.ui.dto.TableGroupResponse;
+import kitchenpos.order.dao.OrderDao;
+import kitchenpos.order.dao.OrderTableDao;
+import kitchenpos.table.domain.OrderTable;
+import kitchenpos.table.ui.dto.OrderTableRequest;
+import kitchenpos.tablegroup.application.TableGroupService;
+import kitchenpos.tablegroup.dao.TableGroupDao;
+import kitchenpos.tablegroup.domain.TableGroup;
+import kitchenpos.tablegroup.ui.dto.TableGroupRequest;
+import kitchenpos.tablegroup.ui.dto.TableGroupResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
