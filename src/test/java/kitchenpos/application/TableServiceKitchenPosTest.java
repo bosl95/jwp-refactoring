@@ -28,16 +28,18 @@ import static org.mockito.Mockito.verify;
 @ExtendWith(MockitoExtension.class)
 class TableServiceKitchenPosTest extends KitchenPosTestFixture {
 
-    private final OrderTable firstOrderTable = 주문_테이블을_저장한다(1L, null, 2, true);
-    private final OrderTable secondOrderTable = 주문_테이블을_저장한다(2L, null, 3, false);
-    private final OrderTableRequest orderTableRequest = 주문_테이블을_요청한다(0, false);
-    private final OrderTable savedOrderTable = 주문_테이블을_저장한다(1L, null, orderTableRequest);
     @Mock
     private OrderDao orderDao;
     @Mock
     private OrderTableDao orderTableDao;
     @InjectMocks
     private TableService tableService;
+
+    private final OrderTable firstOrderTable = 주문_테이블을_저장한다(1L, null, 2, true);
+    private final OrderTable secondOrderTable = 주문_테이블을_저장한다(2L, null, 3, false);
+
+    private final OrderTableRequest orderTableRequest = 주문_테이블을_요청한다(0, false);
+    private final OrderTable savedOrderTable = 주문_테이블을_저장한다(1L, null, orderTableRequest);
 
     @DisplayName("테이블을 등록할 수 있다.")
     @Test

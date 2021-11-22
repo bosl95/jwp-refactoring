@@ -58,12 +58,14 @@ class OrderServiceKitchenPosTest extends KitchenPosTestFixture {
             "강정치킨",
             BigDecimal.valueOf(17000)
     );
+
     private final MenuProduct menuProduct = 메뉴_상품을_저장한다(
             1L,
             MENU_ID,
             product.getId(),
             2L
     );
+
     private final Menu menu = 메뉴를_저장한다(
             MENU_ID,
             "후라이드+후라이드",

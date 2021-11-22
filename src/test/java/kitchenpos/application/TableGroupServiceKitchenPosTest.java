@@ -34,19 +34,6 @@ import static org.mockito.Mockito.verify;
 @ExtendWith(MockitoExtension.class)
 class TableGroupServiceKitchenPosTest extends KitchenPosTestFixture {
 
-    private OrderTableRequest firstOrderTableRequest = 주문_테이블을_요청한다(1L);
-    private OrderTableRequest secondOrderTableRequest = 주문_테이블을_요청한다(2L);
-
-    private TableGroupRequest tableGroupRequest = 테이블_그룹을_요청한다(
-            LocalDateTime.now(),
-            Arrays.asList(firstOrderTableRequest, secondOrderTableRequest)
-    );
-
-    private OrderTable firstOrderTable = 주문_테이블을_저장한다(1L, null, 3, true);
-    private OrderTable secondOrderTable = 주문_테이블을_저장한다(2L, null, 2, true);
-
-    private TableGroup savedTableGroup = 테이블_그룹을_저장한다(1L, LocalDateTime.now(), Arrays.asList(firstOrderTable, secondOrderTable));
-
     @Mock
     private OrderDao orderDao;
     @Mock
@@ -55,6 +42,23 @@ class TableGroupServiceKitchenPosTest extends KitchenPosTestFixture {
     private TableGroupDao tableGroupDao;
     @InjectMocks
     private TableGroupService tableGroupService;
+
+    private final OrderTableRequest firstOrderTableRequest = 주문_테이블을_요청한다(1L);
+    private final OrderTableRequest secondOrderTableRequest = 주문_테이블을_요청한다(2L);
+
+    private final TableGroupRequest tableGroupRequest = 테이블_그룹을_요청한다(
+            LocalDateTime.now(),
+            Arrays.asList(firstOrderTableRequest, secondOrderTableRequest)
+    );
+
+    private final OrderTable firstOrderTable = 주문_테이블을_저장한다(1L, null, 3, true);
+    private final OrderTable secondOrderTable = 주문_테이블을_저장한다(2L, null, 2, true);
+
+    private final TableGroup savedTableGroup = 테이블_그룹을_저장한다(
+            1L,
+            LocalDateTime.now(),
+            Arrays.asList(firstOrderTable, secondOrderTable)
+    );
 
     @DisplayName("주문 테이블 그룹을 등록한다.")
     @Test
@@ -89,7 +93,10 @@ class TableGroupServiceKitchenPosTest extends KitchenPosTestFixture {
     @Test
     void validateTableGroupCreateWhenOrderTableSizeLessThanTwo() {
         // when
-        TableGroupRequest invalidTableGroupRequest = 테이블_그룹을_요청한다(LocalDateTime.now(), Collections.singletonList(주문_테이블을_요청한다(firstOrderTable.getId())));
+        TableGroupRequest invalidTableGroupRequest = 테이블_그룹을_요청한다(
+                LocalDateTime.now(),
+                Collections.singletonList(주문_테이블을_요청한다(firstOrderTable.getId()))
+        );
 
         // then
         assertThatThrownBy(() -> tableGroupService.create(invalidTableGroupRequest)).isInstanceOf(IllegalArgumentException.class);
@@ -111,9 +118,27 @@ class TableGroupServiceKitchenPosTest extends KitchenPosTestFixture {
         verify(orderTableDao, times(1)).findAllByIdIn(orderTableIds);
     }
 
-    @DisplayName("저장된 주문 테이블이 비어있거나 주문 테이블 그룹이 이미 등록되어있다면 등록할 수 없다.")
+    @DisplayName("저장된 주문 테이블이 비어있다면 등록할 수 없다.")
     @Test
-    void validateOrderTable() {
+    void emptyOrderTable() {
+        // given
+        List<Long> orderTableIds = tableGroupRequest.getOrderTables()
+                .stream()
+                .map(OrderTableRequest::getId)
+                .collect(Collectors.toList());
+
+        // when
+        // then
+        OrderTable findOrderTable = 주문_테이블을_저장한다(3L, 3L, 1, true);
+        given(orderTableDao.findAllByIdIn(orderTableIds)).willReturn(Collections.singletonList(findOrderTable));
+        assertThatThrownBy(() -> tableGroupService.create(tableGroupRequest)).isInstanceOf(IllegalArgumentException.class);
+
+        verify(orderTableDao, times(1)).findAllByIdIn(orderTableIds);
+    }
+
+    @DisplayName("주문 테이블 그룹이 이미 등록되어있다면 등록할 수 없다.")
+    @Test
+    void alreadySaveOrderTable() {
         // given
         List<Long> orderTableIds = tableGroupRequest.getOrderTables()
                 .stream()
@@ -126,11 +151,7 @@ class TableGroupServiceKitchenPosTest extends KitchenPosTestFixture {
         given(orderTableDao.findAllByIdIn(orderTableIds)).willReturn(Collections.singletonList(findOrderTable));
         assertThatThrownBy(() -> tableGroupService.create(tableGroupRequest)).isInstanceOf(IllegalArgumentException.class);
 
-        findOrderTable = 주문_테이블을_저장한다(3L, 3L, 1, true);
-        given(orderTableDao.findAllByIdIn(orderTableIds)).willReturn(Collections.singletonList(findOrderTable));
-        assertThatThrownBy(() -> tableGroupService.create(tableGroupRequest)).isInstanceOf(IllegalArgumentException.class);
-
-        verify(orderTableDao, times(orderTableIds.size())).findAllByIdIn(orderTableIds);
+        verify(orderTableDao, times(1)).findAllByIdIn(orderTableIds);
     }
 
     @DisplayName("주문받을 테이블을 제거한다.")

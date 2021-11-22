@@ -37,31 +37,67 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(MenuRestController.class)
 class MenuRestControllerTest extends KitchenPosTestFixture {
 
-    MenuProductRequest secondMenuProductRequest = 메뉴_상품을_요청한다(2L, 200L);
     @Autowired
     private MockMvc mvc;
     @Autowired
     private ObjectMapper objectMapper;
     @MockBean
     private MenuService menuService;
-    private Product firstProduct = 상품을_저장한다(1L, "후라이드", BigDecimal.valueOf(3000));
-    private Product secondProduct = 상품을_저장한다(1L, "후라이드", BigDecimal.valueOf(3000));
-    private MenuProduct firstMenuProduct = 메뉴_상품을_저장한다(1L, 1L, firstProduct.getId(), 100L);
-    private Menu firstMenu = 메뉴를_저장한다(1L, "닭강정", BigDecimal.valueOf(1000), 1L, Collections.singletonList(firstMenuProduct));
-    MenuProductRequest firstMenuProductRequest = 메뉴_상품을_요청한다(firstMenuProduct.getProductId(), firstMenuProduct.getQuantity());
-    MenuRequest firstMenuRequest = 메뉴를_요청한다(
+
+
+
+    private final Product firstProduct = 상품을_저장한다(
+            1L,
+            "후라이드",
+            BigDecimal.valueOf(3000)
+    );
+
+    private final Product secondProduct = 상품을_저장한다(
+            2L,
+            "양념",
+            BigDecimal.valueOf(3000)
+    );
+
+    private final MenuProduct firstMenuProduct = 메뉴_상품을_저장한다(
+            1L,
+            1L,
+            firstProduct.getId(),
+            100L
+    );
+
+    private final Menu firstMenu = 메뉴를_저장한다(
+            1L,
+            "닭강정",
+            BigDecimal.valueOf(1000),
+            1L,
+            Collections.singletonList(firstMenuProduct)
+    );
+
+    private final MenuProduct secondMenuProduct = 메뉴_상품을_저장한다(
+            2L,
+            2L,
+            secondProduct.getId(),
+            200L
+    );
+
+    private final Menu secondMenu = 메뉴를_저장한다(
+            2L,
+            "menu2",
+            BigDecimal.valueOf(3000),
+            1L,
+            Collections.singletonList(secondMenuProduct)
+    );
+
+    private final MenuProductRequest firstMenuProductRequest = 메뉴_상품을_요청한다(
+            firstMenuProduct.getProductId(),
+            firstMenuProduct.getQuantity()
+    );
+
+    private final MenuRequest firstMenuRequest = 메뉴를_요청한다(
             "닭강정",
             BigDecimal.valueOf(1000),
             1L,
             Collections.singletonList(firstMenuProductRequest)
-    );
-    private MenuProduct secondMenuProduct = 메뉴_상품을_저장한다(2L, 2L, secondProduct.getId(), 200L);
-    private Menu secondMenu = 메뉴를_저장한다(2L, "menu2", BigDecimal.valueOf(3000), 1L, Collections.singletonList(secondMenuProduct));
-    private MenuRequest secondMenuRequest = 메뉴를_요청한다(
-            "떡볶이",
-            BigDecimal.valueOf(3000),
-            1L,
-            Collections.singletonList(secondMenuProductRequest)
     );
 
     @Test

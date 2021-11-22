@@ -31,18 +31,23 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(TableRestController.class)
 class TableRestControllerTest extends KitchenPosTestFixture {
 
-    private final OrderTableRequest firstOrderTableRequest = 주문_테이블을_요청한다(3, false);
-    private final OrderTableResponse firstOrderTableResponse
-            = OrderTableResponse.of(주문_테이블을_저장한다(1L, 1L, firstOrderTableRequest));
-    private final OrderTableRequest secondOrderTableRequest = 주문_테이블을_요청한다(3, true);
-    private final OrderTableResponse secondOrderTableResponse
-            = OrderTableResponse.of(주문_테이블을_저장한다(2L, 1L, secondOrderTableRequest));
     @Autowired
     private MockMvc mvc;
     @Autowired
     private ObjectMapper objectMapper;
     @MockBean
     private TableService tableService;
+
+    private final OrderTableRequest firstOrderTableRequest = 주문_테이블을_요청한다(3, false);
+    private final OrderTableRequest secondOrderTableRequest = 주문_테이블을_요청한다(3, true);
+
+    private final OrderTableResponse firstOrderTableResponse = OrderTableResponse.of(
+            주문_테이블을_저장한다(1L, 1L, firstOrderTableRequest)
+    );
+
+    private final OrderTableResponse secondOrderTableResponse = OrderTableResponse.of(
+            주문_테이블을_저장한다(2L, 1L, secondOrderTableRequest)
+    );
 
     @Test
     void create() throws Exception {
@@ -83,8 +88,9 @@ class TableRestControllerTest extends KitchenPosTestFixture {
     void changeEmpty() throws Exception {
         // given
         OrderTableRequest changedOrderTableRequest = 주문_테이블을_요청한다(3, false);
-        OrderTableResponse changedOrderTableResponse =
-                OrderTableResponse.of(주문_테이블을_저장한다(2L, 1L, changedOrderTableRequest));
+        OrderTableResponse changedOrderTableResponse = OrderTableResponse.of(
+                주문_테이블을_저장한다(2L, 1L, changedOrderTableRequest)
+        );
 
         // when
         given(tableService.changeEmpty(any(Long.class), any(OrderTableRequest.class))).willReturn(changedOrderTableResponse);
@@ -105,8 +111,9 @@ class TableRestControllerTest extends KitchenPosTestFixture {
     void changeNumberOfGuests() throws Exception {
         // given
         OrderTableRequest changedOrderTableRequest = 주문_테이블을_요청한다(7, false);
-        OrderTableResponse changedOrderTableResponse =
-                OrderTableResponse.of(주문_테이블을_저장한다(1L, 1L, changedOrderTableRequest));
+        OrderTableResponse changedOrderTableResponse = OrderTableResponse.of(
+                주문_테이블을_저장한다(1L, 1L, changedOrderTableRequest)
+        );
 
         // when
         given(tableService.changeNumberOfGuests(any(Long.class), any(OrderTableRequest.class))).willReturn(changedOrderTableResponse);

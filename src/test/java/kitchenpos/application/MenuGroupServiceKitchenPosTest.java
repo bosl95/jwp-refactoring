@@ -25,12 +25,13 @@ import static org.mockito.Mockito.verify;
 @ExtendWith(MockitoExtension.class)
 class MenuGroupServiceKitchenPosTest extends KitchenPosTestFixture {
 
-    private final MenuGroup menuGroup = 메뉴_그룹을_저장한다(null, "추천 메뉴");
-    private final MenuGroupRequest menuGroupRequest = 메뉴_그룹을_요청한다("추천 메뉴");
     @Mock
     private MenuGroupDao menuGroupDao;
     @InjectMocks
     private MenuGroupService menuGroupService;
+
+    private final MenuGroup menuGroup = 메뉴_그룹을_저장한다(null, "추천 메뉴");
+    private final MenuGroupRequest menuGroupRequest = 메뉴_그룹을_요청한다("추천 메뉴");
 
     @DisplayName("메뉴 분류를 위한 그룹을 등록할 수 있다.")
     @Test

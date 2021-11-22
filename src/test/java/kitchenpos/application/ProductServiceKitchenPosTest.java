@@ -9,6 +9,7 @@ import kitchenpos.product.ui.dto.ProductResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.shadow.com.univocity.parsers.annotations.Nested;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -27,12 +28,13 @@ import static org.mockito.Mockito.verify;
 @ExtendWith(MockitoExtension.class)
 class ProductServiceKitchenPosTest extends KitchenPosTestFixture {
 
-    private final ProductRequest firstProductRequest = 상품을_요청한다("강정치킨", BigDecimal.valueOf(1700));
-    private final ProductRequest secondProductRequest = 상품을_요청한다("튀김소보로", BigDecimal.valueOf(1200));
     @Mock
     private ProductDao productDao;
     @InjectMocks
     private ProductService productService;
+
+    private final ProductRequest firstProductRequest = 상품을_요청한다("강정치킨", BigDecimal.valueOf(1700));
+    private final ProductRequest secondProductRequest = 상품을_요청한다("튀김소보로", BigDecimal.valueOf(1200));
 
     @DisplayName("상품을 등록할 수 있다.")
     @Test
@@ -49,27 +51,43 @@ class ProductServiceKitchenPosTest extends KitchenPosTestFixture {
         verify(productDao, times(1)).save(any(Product.class));
     }
 
-    @DisplayName("1자 이상의 문자로 구성된 상품명을 등록한다.")
+    @DisplayName("상품명이 null인 경우 예외가 발생한다.")
     @Test
-    void validateProductNameLength() {
+    void nullNameProduct() {
         // given
         ProductRequest nullNameProduct = 상품을_요청한다(null, BigDecimal.valueOf(1700));
-        ProductRequest emptyNameProduct = 상품을_요청한다("", BigDecimal.valueOf(1700));
 
         // then
         assertThatThrownBy(() -> productService.create(nullNameProduct)).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("상품명이 1미만인 경우 예외가 발생한다.")
+    @Test
+    void emptyNameProduct() {
+        // given
+        ProductRequest emptyNameProduct = 상품을_요청한다("", BigDecimal.valueOf(1700));
+
+        // then
         assertThatThrownBy(() -> productService.create(emptyNameProduct)).isInstanceOf(IllegalArgumentException.class);
     }
 
-    @DisplayName("상품의 가격은 0원 이상이어야한다.")
+    @DisplayName("상품 가격이 음수인 경우 예외가 발생한다.")
+    @Test
+    void negativeProductPrice() {
+        // given
+        ProductRequest negativePriceProduct = 상품을_요청한다("강정치킨", BigDecimal.valueOf(-1));
+
+        // when
+        assertThatThrownBy(() -> productService.create(negativePriceProduct)).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("상품 가격이 null인 경우 예외가 발생한다.")
     @Test
     void validateProductPrice() {
         // given
-        ProductRequest zeroPriceProduct = 상품을_요청한다("강정치킨", BigDecimal.valueOf(-1));
         ProductRequest nullPriceProduct = 상품을_요청한다("강정치킨", null);
 
         // when
-        assertThatThrownBy(() -> productService.create(zeroPriceProduct)).isInstanceOf(IllegalArgumentException.class);
         assertThatThrownBy(() -> productService.create(nullPriceProduct)).isInstanceOf(IllegalArgumentException.class);
     }
 

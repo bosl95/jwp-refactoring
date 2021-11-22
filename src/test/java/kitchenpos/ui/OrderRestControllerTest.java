@@ -36,8 +36,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(OrderRestController.class)
 class OrderRestControllerTest extends KitchenPosTestFixture {
 
+    @Autowired
+    private MockMvc mvc;
+    @Autowired
+    private ObjectMapper objectMapper;
+    @MockBean
+    private OrderService orderService;
+
     private final OrderLineItem orderLineItem1 = 주문_항목을_저장한다(1L, 1L, 1L, 1000L);
     private final OrderLineItem orderLineItem2 = 주문_항목을_저장한다(2L, 2L, 2L, 1000L);
+
     private final Order firstOrder = 주문을_저장한다(
             1L,
             1L,
@@ -45,6 +53,7 @@ class OrderRestControllerTest extends KitchenPosTestFixture {
             LocalDateTime.now(),
             Arrays.asList(orderLineItem1, orderLineItem2)
     );
+
     private final Order secondOrder = 주문을_저장한다(
             2L,
             2L,
@@ -60,28 +69,18 @@ class OrderRestControllerTest extends KitchenPosTestFixture {
             firstOrder.getOrderTableId(),
             Collections.singletonList(firstOrderLineItemRequest)
     );
-    @Autowired
-    private MockMvc mvc;
-    @Autowired
-    private ObjectMapper objectMapper;
-    @MockBean
-    private OrderService orderService;
+
+    private final OrderStatusRequest orderStatusRequest = new OrderStatusRequest(OrderStatus.COMPLETION.name());
 
     @Test
     void create() throws Exception {
         // given
         // when
-        given(orderService.create(any())).willReturn(OrderResponse.of(firstOrder));
+        given(orderService.create(any(OrderRequest.class))).willReturn(OrderResponse.of(firstOrder));
 
         // then
         mvc.perform(post("/api/orders")
-                        .content(objectMapper.writeValueAsString(
-                                주문을_저장한다(firstOrder.getId(),
-                                        firstOrder.getOrderTableId(),
-                                        firstOrder.getOrderStatus(),
-                                        firstOrder.getOrderedTime(),
-                                        firstOrder.getOrderLineItems()))
-                        )
+                        .content(objectMapper.writeValueAsString(firstOrderRequest))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
@@ -123,7 +122,7 @@ class OrderRestControllerTest extends KitchenPosTestFixture {
 
         // then
         mvc.perform(put("/api/orders/{orderId}/order-status", 1)
-                        .content(objectMapper.writeValueAsString(firstOrder))
+                        .content(objectMapper.writeValueAsString(orderStatusRequest))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
